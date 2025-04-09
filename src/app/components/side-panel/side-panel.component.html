@@ -1,0 +1,46 @@
+<div class="side-panel">
+    <div class="upper-panel">
+        <img [src]="customIconsList['dashboard_logo']" class="dashboard-logo" data-target="dashboard"
+            (click)="redirectTo($event)" name="dashboard-logo" />
+
+        <span class="material-symbols-outlined icon" aria-label="Home" data-target="home" (click)="redirectTo($event)"
+            [class.active]="isActive('home')">
+            home
+        </span>
+
+        <span class="material-symbols-outlined icon" aria-label="Chart" (click)="redirectTo($event)" data-target="chart"
+            [class.active]="isActive('chart')">
+            insert_chart
+        </span>
+
+        <span class="material-symbols-outlined icon" aria-label="Stacks" (click)="redirectTo($event)"
+            data-target="stacks" [class.active]="isActive('stacks')">
+            stacks
+        </span>
+
+        <span class="material-symbols-outlined icon" aria-label="Library" (click)="redirectTo($event)"
+            data-target="library" [class.active]="isActive('library')">
+            library_add_check
+        </span>
+
+        <span class="material-symbols-outlined icon" aria-label="Pie Chart" (click)="redirectTo($event)"
+            data-target="pie_chart" [class.active]="isActive('pie_chart')">
+            pie_chart
+        </span>
+
+        <span class="material-symbols-outlined icon" aria-label="People" (click)="redirectTo($event)"
+            data-target="people" [class.active]="isActive('people')">
+            group
+        </span>
+
+    </div>
+
+    <div class="lower-panel">
+        <span class="material-symbols-outlined icon" aria-label="Settings" (click)="redirectTo($event)"
+            data-target="settings" [class.active]="isActive('settings')">
+            settings
+        </span>
+
+        <img [src]="customIconsList['user-logo']" alt="user-profile-image" class="user-logo" data-target="user-logo" />
+    </div>
+</div>
