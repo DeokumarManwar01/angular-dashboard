@@ -1,0 +1,86 @@
+.gauge-chart-container {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+
+  .gauge-chart-header {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    justify-content: start;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .gauge-chart-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    .gauge-chart {
+      width: 80%;
+      position: relative;
+      max-width: 200px;
+      margin: 0 auto;
+      padding: 10px;
+
+      .gauge-value {
+        position: absolute;
+        top: 70%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 32px;
+        font-weight: bold;
+        color: #936bfb;
+      }
+    }
+
+    .hike {
+      margin-top: 10px;
+      margin-right: 10px;
+      width: 20%;
+      text-align: end;
+      display: flex;
+      flex-direction: row;
+      justify-content: end;
+      color: #2bab00b9;
+      .hike-value {
+        font-size: 14px;
+        margin-top: 4px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .gauge-info {
+    margin-top: 14px;
+    padding-inline: 20px;
+    padding-bottom: 20px;
+  }
+}
+
+.heading {
+  display: block;
+  font-size: 1.17em;
+  margin-top: 6px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-weight: bold;
+  unicode-bidi: isolate;
+}
+
+.description {
+  color: #707070b9;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.chart-footer {
+  display: flex;
+  justify-content: end;
+  padding-inline: 20px;
+  padding-bottom: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #e0e0e0;
+}

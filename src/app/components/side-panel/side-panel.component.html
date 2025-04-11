@@ -3,41 +3,48 @@
         <img [src]="customIconsList['dashboard_logo']" class="dashboard-logo" data-target="dashboard"
             (click)="redirectTo($event)" name="dashboard-logo" />
 
-        <span class="material-symbols-outlined icon" aria-label="Home" data-target="home" (click)="redirectTo($event)"
-            [class.active]="isActive('home')">
+        <span class="material-symbols-outlined icon" [attr.aria-label]="'SIDE_PANEL.HOME' | translate"
+            data-target="home" (click)="redirectTo($event)" [class.active]="isActive('home')"
+            [matTooltip]="'SIDE_PANEL.HOME' | translate">
             home
         </span>
 
-        <span class="material-symbols-outlined icon" aria-label="Chart" (click)="redirectTo($event)" data-target="chart"
-            [class.active]="isActive('chart')">
+        <span class="material-symbols-outlined icon" [attr.aria-label]="'SIDE_PANEL.CHART' | translate"
+            (click)="redirectTo($event)" data-target="chart" [class.active]="isActive('chart')"
+            [matTooltip]="'SIDE_PANEL.CHART' | translate">
             insert_chart
         </span>
 
-        <span class="material-symbols-outlined icon" aria-label="Stacks" (click)="redirectTo($event)"
-            data-target="stacks" [class.active]="isActive('stacks')">
+        <span class="material-symbols-outlined icon" [attr.aria-label]="'SIDE_PANEL.STACKS' | translate"
+            (click)="redirectTo($event)" data-target="stacks" [class.active]="isActive('stacks')"
+            [matTooltip]="'SIDE_PANEL.STACKS' | translate">
             stacks
         </span>
 
-        <span class="material-symbols-outlined icon" aria-label="Library" (click)="redirectTo($event)"
-            data-target="library" [class.active]="isActive('library')">
+        <span class="material-symbols-outlined icon" [attr.aria-label]="'SIDE_PANEL.LIBRARY' | translate"
+            (click)="redirectTo($event)" data-target="library" [class.active]="isActive('library')"
+            [matTooltip]="'SIDE_PANEL.LIBRARY' | translate">
             library_add_check
         </span>
 
-        <span class="material-symbols-outlined icon" aria-label="Pie Chart" (click)="redirectTo($event)"
-            data-target="pie_chart" [class.active]="isActive('pie_chart')">
+        <span class="material-symbols-outlined icon" [attr.aria-label]="'SIDE_PANEL.PIE_CHART' | translate"
+            (click)="redirectTo($event)" data-target="pie_chart" [class.active]="isActive('pie_chart')"
+            [matTooltip]="'SIDE_PANEL.PIE_CHART' | translate">
             pie_chart
         </span>
 
-        <span class="material-symbols-outlined icon" aria-label="People" (click)="redirectTo($event)"
-            data-target="people" [class.active]="isActive('people')">
+        <span class="material-symbols-outlined icon" [attr.aria-label]="'SIDE_PANEL.PEOPLE' | translate"
+            (click)="redirectTo($event)" data-target="people" [class.active]="isActive('people')"
+            [matTooltip]="'SIDE_PANEL.PEOPLE' | translate">
             group
         </span>
 
     </div>
 
     <div class="lower-panel">
-        <span class="material-symbols-outlined icon" aria-label="Settings" (click)="redirectTo($event)"
-            data-target="settings" [class.active]="isActive('settings')">
+        <span class="material-symbols-outlined icon" [attr.aria-label]="'SIDE_PANEL.SETTINGS' | translate"
+            (click)="redirectTo($event)" data-target="settings" [class.active]="isActive('settings')"
+            [matTooltip]="'SIDE_PANEL.SETTINGS' | translate" matTooltipPosition="above">
             settings
         </span>
 

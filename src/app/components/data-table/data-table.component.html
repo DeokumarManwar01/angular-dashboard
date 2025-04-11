@@ -1,0 +1,141 @@
+<div class="data-table-container">
+  <div
+    *ngIf="selectable && getSelectedRowsCount() > 0"
+    class="selection-summary"
+  >
+    <p>
+      {{ getSelectedRowsCount() }}
+      {{
+        getSelectedRowsCount() === 1
+          ? ("CHART.ROW" | translate)
+          : ("CHART.ROWS" | translate)
+      }}
+      {{ "CHART.SELECTED" | translate }}
+    </p>
+    <app-stroked-button
+      (buttonClick)="deleteAllSelectedRows()"
+      icon="delete"
+      label="{{ 'CHART.DELETE' | translate }}"
+      color="danger"
+    ></app-stroked-button>
+  </div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th *ngIf="selectable" class="select-column">
+          <div class="checkbox-container">
+            <input
+              type="checkbox"
+              [checked]="allSelected"
+              (change)="toggleSelectAll()"
+              id="select-all"
+            />
+            <label for="select-all"></label>
+          </div>
+        </th>
+
+        <th *ngFor="let column of columns; trackBy: trackByColumnKey" [ngClass]="column.type">
+          {{ column.displayName }}
+        </th>
+
+        <th *ngIf="deletable" class="actions-column">
+          {{ "CHART.ACTIONS" | translate }}
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of data; trackBy: trackByRowId" [class.selected]="isSelected(row)">
+        <td *ngIf="selectable" class="select-column">
+          <div class="checkbox-container">
+            <input
+              type="checkbox"
+              [checked]="isSelected(row)"
+              (change)="toggleRowSelection(row, $event)"
+              [id]="'select-' + row.id"
+            />
+            <label [for]="'select-' + row.id"></label>
+          </div>
+        </td>
+
+        <td *ngFor="let column of columns; trackBy: trackByColumnKey" [ngClass]="column.type">
+          <ng-container *ngIf="column.type === TABLE_COLUMN_TYPES.STRING">
+            <div class="string-cell">
+              {{ getCellValue(row, column) }}
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="column.type === TABLE_COLUMN_TYPES.NAME">
+            <div class="name-container">
+              <img
+                [src]="row.image"
+                alt="user-profile-image"
+                class="user-logo"
+                data-target="user-logo"
+              />
+              <div
+                class="name-value"
+                [attr.data-handle]="row?.name?.handle || ''"
+              >
+                {{ getCellValue(row, column) }}
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container
+            *ngIf="
+              column.type === TABLE_COLUMN_TYPES.TAGS &&
+              column.key === TABLE_COLUMN_TYPES.TEAMS
+            "
+          >
+            <span
+              class="tag"
+              *ngFor="let tag of row.teams; trackBy: trackByTagValue"
+              [ngClass]="getTagColorClass(tag)"
+            >
+              {{ tag.value }}
+            </span>
+          </ng-container>
+
+          <ng-container *ngIf="column.type === TABLE_COLUMN_TYPES.STATUS">
+            <span class="status-badge" [class]="row.status.toLowerCase()">
+              {{ row.status }}
+            </span>
+          </ng-container>
+
+          <ng-container *ngIf="column.type === TABLE_COLUMN_TYPES.PROGRESS">
+            <div class="progress-container">
+              <div class="progress-bar-container">
+                <div
+                  class="progress-bar"
+                  [ngClass]="getProgressWidthClass(row.licensesUsed)"
+                ></div>
+              </div>
+              <div class="progress-text">{{ row.licensesUsed }}%</div>
+            </div>
+          </ng-container>
+        </td>
+
+        <td *ngIf="deletable" class="actions-column">
+          <button class="delete-btn" (click)="deleteRow(row, $event)">
+            <span class="material-symbols-outlined"> delete </span>
+          </button>
+          <button class="edit-btn" (click)="showRowInfo(row, $event)">
+            <span class="material-symbols-outlined"> edit </span>
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="data.length === 0">
+        <td
+          [attr.colspan]="
+            columns.length + (selectable ? 1 : 0) + (deletable ? 1 : 0)
+          "
+          class="empty-state"
+        >
+          {{ "CHART.NO_DATA_AVAILABLE" | translate }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

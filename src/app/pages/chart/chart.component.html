@@ -1,0 +1,127 @@
+<div class="chart-component">
+  <div class="chart-header">
+    <h2>{{ "CHART.TITLE" | translate }} {{ name }}</h2>
+    <div class="chart-header-buttons">
+      <div class="search-bar" [class.show]="showSearch">
+        <input
+          type="text"
+          placeholder="{{ 'CHART.SEARCH' | translate }}"
+          [(ngModel)]="searchText"
+        />
+        <span
+          class="material-symbols-outlined close-icon"
+          *ngIf="searchText"
+          (click)="clearSearch()"
+        >
+          close
+        </span>
+      </div>
+
+      <span
+        class="material-symbols-outlined icon"
+        (click)="toggleSearch()"
+        style="cursor: pointer"
+      >
+        search
+      </span>
+
+      <app-stroked-button
+        label="{{ 'CHART.CUSTOMIZE' | translate }}"
+        icon="tune"
+        (buttonClick)="onSubmit()"
+      ></app-stroked-button>
+
+      <app-stroked-button
+        label="{{ 'CHART.EXPORT' | translate }}"
+        icon="cloud_download"
+        (buttonClick)="onSubmit()"
+      ></app-stroked-button>
+    </div>
+  </div>
+  <div class="chart-content">
+    <div class="bar-chart-content">
+      <app-bar-chart></app-bar-chart>
+    </div>
+    <div class="gauge-chart-content">
+      <app-gauge-chart></app-gauge-chart>
+    </div>
+  </div>
+  <div class="table-container">
+    <div class="name-container">
+      <h3>{{ "CHART.TEAM_MEMBERS" | translate }}</h3>
+      <div class="count-badge">
+        {{ members.length }} {{ "CHART.USERS" | translate }}
+      </div>
+    </div>
+    <app-data-table
+      [data]="members"
+      [columns]="headers"
+      (tableOperation)="onTableOperation($event)"
+    ></app-data-table>
+    <div class="pagination">
+      <app-stroked-button
+        icon="arrow_back"
+        label="{{ 'CHART.PREVIOUS' | translate }}"
+        [disabled]="currentPage === 1"
+        (buttonClick)="previousPage()"
+      ></app-stroked-button>
+
+      <div class="pagination-numbers">
+        <button
+          class="page-num"
+          [class.active]="currentPage === 1"
+          (click)="changePage(1)"
+        >
+          1
+        </button>
+        <button
+          class="page-num"
+          [class.active]="currentPage === 2"
+          (click)="changePage(2)"
+        >
+          2
+        </button>
+        <button
+          class="page-num"
+          [class.active]="currentPage === 3"
+          (click)="changePage(3)"
+        >
+          3
+        </button>
+        <span class="ellipsis" *ngIf="totalPages > 5">...</span>
+
+        <ng-container
+          *ngIf="
+            totalPages > 5 && currentPage > 3 && currentPage < totalPages - 2
+          "
+        >
+          <button class="page-num active">{{ currentPage }}</button>
+        </ng-container>
+
+        <ng-container *ngIf="totalPages > 4">
+          <button
+            class="page-num"
+            [class.active]="currentPage === totalPages - 1"
+            (click)="changePage(totalPages - 1)"
+          >
+            {{ totalPages - 1 }}
+          </button>
+          <button
+            class="page-num"
+            [class.active]="currentPage === totalPages"
+            (click)="changePage(totalPages)"
+          >
+            {{ totalPages }}
+          </button>
+        </ng-container>
+      </div>
+
+      <app-stroked-button
+        icon="arrow_forward"
+        label="{{ 'CHART.NEXT' | translate }}"
+        [disabled]="currentPage === totalPages"
+        (buttonClick)="nextPage()"
+      ></app-stroked-button>
+    </div>
+  </div>
+</div>

@@ -1,38 +1,31 @@
-import { Component, OnInit } from "@angular/core";
-import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
-import { ToastService } from "../../shared/services/toast.service";
-import { customIcons } from "../../icons/icon.model";
+import { Component } from '@angular/core';
+import { ToastService } from '../../shared/services/toast.service';
+import { customIcons } from '../../icons/icon.model';
+import { Store } from '@ngxs/store';
+import { FetchMembersAndHeaders } from '../../stores/members.action';
 
 @Component({
-    standalone: false,
-    selector: 'app-side-panel',
-    templateUrl: './side-panel.component.html',
-    styleUrl: './side-panel.component.scss',
+  standalone: false,
+  selector: 'app-side-panel',
+  templateUrl: './side-panel.component.html',
+  styleUrl: './side-panel.component.scss',
 })
-export class SidePanelComponent implements OnInit {
-    customIconsList = customIcons;
-    activeTarget: string = 'chart';
-    constructor(private toastService: ToastService) { }
+export class SidePanelComponent {
+  customIconsList = customIcons;
+  activeTarget: string = 'chart';
+  constructor(private _toastService: ToastService, private _store: Store) {}
 
-    ngOnInit() {
-
+  redirectTo(event: Event) {
+    const target = event.currentTarget as HTMLElement;
+    const destination = target.dataset['target'];
+    if (destination === 'dashboard') {
+      this._store.dispatch(new FetchMembersAndHeaders());
+    } else if (destination !== 'chart') {
+      this._toastService.show(`Operation not valid: ${destination}`, 'info');
     }
+  }
 
-    redirectTo(event: any) {
-        const target = event.currentTarget as HTMLElement;
-        const destination = target.dataset['target'];
-        if (destination === 'dashboard') {
-            //! TODO: reset the dashboard to initial Stage
-            console.log('Resetting the dashboard')
-        } else if (destination !== 'chart') {
-            this.toastService.show(`Operation not valid on destination: ${destination}`, 'info');
-        }
-
-    }
-
-    isActive(target: string): boolean {
-        return this.activeTarget === target;
-    }
-
+  isActive(target: string): boolean {
+    return this.activeTarget === target;
+  }
 }

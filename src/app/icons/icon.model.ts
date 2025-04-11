@@ -3,6 +3,7 @@ export interface IconMap {
 }
 
 export const customIcons: IconMap = {
-  'dashboard_logo': 'assets/icons/dashboard_logo.png',
-  'user-logo': 'assets/icons/user_profile.jpg'
+  dashboard_logo: 'assets/icons/dashboard_logo.png',
+  'user-logo': 'assets/icons/user_profile.jpg',
+  'bar-chart': 'assets/icons/bar_chart.png',
 };

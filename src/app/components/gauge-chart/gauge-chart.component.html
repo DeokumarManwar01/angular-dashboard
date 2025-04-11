@@ -1,0 +1,39 @@
+<div class="gauge-chart-container">
+  <div class="gauge-chart-header">
+    <div class="heading">{{ "CHART.GAUGE_TITLE" | translate }}</div>
+    <div class="description">
+      {{ "CHART.GAUGE_DESC_1" | translate }} {{ vendorsUsed }}%
+      {{ "CHART.GAUGE_DESC_2" | translate }}
+    </div>
+  </div>
+  <div class="gauge-chart-content">
+    <div class="gauge-chart">
+      <canvas
+        baseChart
+        [type]="'doughnut'"
+        [data]="doughnutChartData"
+        [options]="doughnutChartOptions"
+      >
+      </canvas>
+      <div class="gauge-value">{{ gaugeValue }}</div>
+    </div>
+    <div class="hike">
+      <span class="material-symbols-outlined"> trending_up </span>
+      <div class="hike-value">{{ hikeValue }}%</div>
+    </div>
+  </div>
+  <div class="gauge-info">
+    <div class="heading">{{ "CHART.REACHED_LIMIT" | translate }}</div>
+    <div class="description">
+      {{ "CHART.GAUGE_INFO_DESC_1" | translate }} {{ vendorsUsed }}%
+      {{ "CHART.GAUGE_INFO_DESC_2" | translate }}
+    </div>
+  </div>
+  <div class="chart-footer">
+    <app-stroked-button
+      label="{{ 'CHART.UPGRADE_PLAN' | translate }}"
+      icon="electric_bolt"
+      (buttonClick)="onViewReport()"
+    ></app-stroked-button>
+  </div>
+</div>

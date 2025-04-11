@@ -1,0 +1,8 @@
+<button class="stroked-btn" [ngClass]="color" [disabled]="disabled" (click)="onClick()">
+    @if(icon){
+    <span class="material-symbols-outlined">
+        {{ icon }}
+    </span>
+    }
+    <div>{{ label }}</div>
+</button>

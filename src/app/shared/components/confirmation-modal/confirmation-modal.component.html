@@ -1,0 +1,17 @@
+<div class="confirmation-content">
+  <h3>{{ data.title }}</h3>
+  <p>{{ data.message }}</p>
+  <div class="confirmation-actions">
+    <app-stroked-button
+      (buttonClick)="cancel()"
+      icon="cancel"
+      label="{{ 'CHART.CANCEL' | translate }}"
+    ></app-stroked-button>
+    <app-stroked-button
+      (buttonClick)="confirm()"
+      icon="delete"
+      label="{{ 'CHART.DELETE' | translate }}"
+      color="danger"
+    ></app-stroked-button>
+  </div>
+</div>

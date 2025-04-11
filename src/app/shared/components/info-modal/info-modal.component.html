@@ -1,0 +1,19 @@
+<div class="info-content">
+  <h3>{{ "CHART.ROW_INFORMATION" | translate }}</h3>
+  <p *ngIf="data?.name">
+    <strong>{{ "CHART.NAME" | translate }}:</strong>
+    {{ data.name?.firstName ?? "John" }}
+    {{ data.name?.lastName ?? "Doe" }}
+  </p>
+  <p *ngIf="data?.name?.handle">
+    <strong>{{ "CHART.HANDLE" | translate }}:</strong>
+    {{ data.name?.handle ?? "@handle" }}
+  </p>
+  <div class="info-actions">
+    <app-stroked-button
+      (buttonClick)="close()"
+      icon="close"
+      label="{{ 'CHART.CANCEL' | translate }}"
+    ></app-stroked-button>
+  </div>
+</div>
