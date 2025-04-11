@@ -111,8 +111,16 @@ export class DataTableComponent {
   async deleteRow(row: IMembers, event: Event): Promise<void> {
     this.handleEvent(event);
     const result = await this._dialog.open(ConfirmationModalComponent, {
-      title: this._translate.instant('CHART.DELETE_ROW'),
-      message: this._translate.instant('CHART.DELETE_ROW_CONFIRMATION'),
+      title:
+        this._translate.instant('CHART.DELETE_ROW') +
+        row.name?.firstName +
+        ' ' +
+        row.name?.lastName,
+      message:
+        this._translate.instant('CHART.DELETE_ROW_CONFIRMATION') +
+        row.name?.firstName +
+        ' ' +
+        row.name?.lastName,
     });
 
     if (result) {
