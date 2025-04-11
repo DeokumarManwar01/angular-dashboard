@@ -34,8 +34,16 @@
           </div>
         </th>
 
-        <th *ngFor="let column of columns; trackBy: trackByColumnKey" [ngClass]="column.type">
-          {{ column.displayName }}
+        <th *ngFor="let column of columns; trackBy: trackByColumnKey" 
+            [ngClass]="column.type"
+            [class.sortable]="isSortable(column)"
+            (click)="isSortable(column) && toggleSort(column)">
+          <div class="th-content">
+            {{ column.displayName }}
+            <span *ngIf="isSortable(column)" class="sort-icon material-symbols-outlined">
+              {{ getSortIcon(column) }}
+            </span>
+          </div>
         </th>
 
         <th *ngIf="deletable" class="actions-column">
@@ -45,7 +53,7 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let row of data; trackBy: trackByRowId" [class.selected]="isSelected(row)">
+      <tr *ngFor="let row of filteredData; trackBy: trackByRowId" [class.selected]="isSelected(row)">
         <td *ngIf="selectable" class="select-column">
           <div class="checkbox-container">
             <input
@@ -126,7 +134,7 @@
         </td>
       </tr>
 
-      <tr *ngIf="data.length === 0">
+      <tr *ngIf="filteredData.length === 0">
         <td
           [attr.colspan]="
             columns.length + (selectable ? 1 : 0) + (deletable ? 1 : 0)

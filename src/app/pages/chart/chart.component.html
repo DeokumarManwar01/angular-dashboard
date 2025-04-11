@@ -18,11 +18,19 @@
       </div>
 
       <span
+        *ngIf="!showSearch"
         class="material-symbols-outlined icon"
         (click)="toggleSearch()"
-        style="cursor: pointer"
       >
         search
+      </span>
+
+      <span
+        *ngIf="showSearch"
+        class="material-symbols-outlined icon"
+        (click)="toggleSearch()"
+      >
+        close
       </span>
 
       <app-stroked-button
@@ -56,6 +64,7 @@
     <app-data-table
       [data]="members"
       [columns]="headers"
+      [searchText]="searchText"
       (tableOperation)="onTableOperation($event)"
     ></app-data-table>
     <div class="pagination">

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import {
   TABLE_COLUMN_TYPES,
   TABLE_OPERATION_TYPES,
@@ -23,11 +23,12 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.scss',
 })
-export class DataTableComponent {
+export class DataTableComponent implements OnChanges {
   @Input() columns: ITableColumn[] = [];
   @Input() data: IMembers[] = [];
   @Input() selectable: boolean = true;
   @Input() deletable: boolean = true;
+  @Input() searchText: string = '';
 
   @Output() tableOperation = new EventEmitter<ITableOperation>();
 
@@ -35,11 +36,120 @@ export class DataTableComponent {
   allSelected: boolean = false;
   TAG_COLORSList = TAG_COLORS;
   TABLE_COLUMN_TYPES = TABLE_COLUMN_TYPES;
+  filteredData: IMembers[] = [];
+
+  // Sort properties
+  sortColumn: string | null = null;
+  sortDirection: 'asc' | 'desc' = 'asc';
+  sortableColumns: string[] = ['name', 'status', 'role'];
 
   constructor(
     private _dialog: DialogService,
     private _translate: TranslateService
   ) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['data'] || changes['searchText']) {
+      this.filterData();
+    }
+  }
+
+  filterData(): void {
+    if (!this.searchText || this.searchText.trim() === '') {
+      this.filteredData = [...this.data];
+    } else {
+      const searchTermLower = this.searchText.toLowerCase().trim();
+      this.filteredData = this.data.filter(row => {
+        // Search in all columns
+        return this.columns.some(column => {
+          const cellValue = this.getCellValue(row, column);
+          if (cellValue === undefined || cellValue === null) {
+            return false;
+          }
+          
+          const stringValue = String(cellValue).toLowerCase();
+          return stringValue.includes(searchTermLower);
+        });
+      });
+    }
+
+    // Apply sorting if a sort column is set
+    if (this.sortColumn) {
+      this.sortData();
+    }
+  }
+
+  sortData(): void {
+    const column = this.columns.find(col => 
+      this.sortColumn === col.key || 
+      (this.sortColumn === 'name' && col.type === TABLE_COLUMN_TYPES.NAME)
+    );
+    
+    if (!column) return;
+
+    this.filteredData = [...this.filteredData].sort((a, b) => {
+      const valueA = this.getSortValue(a, column);
+      const valueB = this.getSortValue(b, column);
+      
+      if (valueA < valueB) {
+        return this.sortDirection === 'asc' ? -1 : 1;
+      }
+      if (valueA > valueB) {
+        return this.sortDirection === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }
+
+  getSortValue(row: IMembers, column: ITableColumn): any {
+    // Get the value for sorting (might be different from display value)
+    if (column.type === TABLE_COLUMN_TYPES.NAME) {
+      return `${row.name?.firstName || ''} ${row.name?.lastName || ''}`.toLowerCase();
+    } else if (column.type === TABLE_COLUMN_TYPES.STATUS) {
+      return row.status?.toLowerCase() || '';
+    } else {
+      return String(this.getCellValue(row, column) || '').toLowerCase();
+    }
+  }
+
+  toggleSort(column: ITableColumn): void {
+    const columnKey = column.type === TABLE_COLUMN_TYPES.NAME ? 'name' : column.key;
+    
+    // Check if column is sortable
+    if (!this.sortableColumns.includes(columnKey)) {
+      return;
+    }
+    
+    if (this.sortColumn === columnKey) {
+      // Toggle direction if already sorting by this column
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      // Set as new sort column with default ascending direction
+      this.sortColumn = columnKey;
+      this.sortDirection = 'asc';
+    }
+    
+    this.sortData();
+  }
+
+  getSortIcon(column: ITableColumn): string {
+    const columnKey = column.type === TABLE_COLUMN_TYPES.NAME ? 'name' : column.key;
+    
+    if (!this.sortableColumns.includes(columnKey)) {
+      return '';
+    }
+    
+    if (this.sortColumn === columnKey) {
+      return this.sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward';
+    }
+    
+    return 'unfold_more';
+  }
+
+  isSortable(column: ITableColumn): boolean {
+    const columnKey = column.type === TABLE_COLUMN_TYPES.NAME ? 'name' : column.key;
+    return this.sortableColumns.includes(columnKey);
+  }
 
   private handleEvent(event: Event | null): void {
     if (event) {
@@ -68,7 +178,7 @@ export class DataTableComponent {
     if (this.allSelected) {
       this.selectedRows.clear();
     } else {
-      this.data.forEach((row) => {
+      this.filteredData.forEach((row) => {
         this.selectedRows.add(row.id);
       });
     }
@@ -89,7 +199,7 @@ export class DataTableComponent {
       this.selectedRows.add(row.id);
     }
 
-    this.allSelected = this.selectedRows.size === this.data.length;
+    this.allSelected = this.selectedRows.size === this.filteredData.length;
     this.emitOperation(
       TABLE_OPERATION_TYPES.SELECT,
       new Set([row.id]),
