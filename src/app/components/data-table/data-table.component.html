@@ -34,15 +34,41 @@
           </div>
         </th>
 
-        <th *ngFor="let column of columns; trackBy: trackByColumnKey" 
-            [ngClass]="column.type"
-            [class.sortable]="isSortable(column)"
-            (click)="isSortable(column) && toggleSort(column)">
+        <th
+          *ngFor="let column of columns; trackBy: trackByColumnKey"
+          [ngClass]="column.type"
+          [class.sortable]="isSortable(column)"
+          (click)="isSortable(column) && toggleSort(column)"
+        >
           <div class="th-content">
             {{ column.displayName }}
-            <span *ngIf="isSortable(column)" class="sort-icon material-symbols-outlined">
-              {{ getSortIcon(column) }}
-            </span>
+            <div class="filter-icons">
+              <span
+                *ngIf="isSortable(column)"
+                class="sort-icon material-symbols-outlined"
+              >
+                {{ getSortIcon(column) }}
+              </span>
+              <span
+                *ngIf="
+                  column.type === TABLE_COLUMN_TYPES.STATUS ||
+                  column.type === TABLE_COLUMN_TYPES.STRING
+                "
+                class="filter-icon material-symbols-outlined"
+                (click)="
+                  $event.stopPropagation(); openStatusFilter(column, $event)
+                "
+                [class.active]="
+                  column.type === TABLE_COLUMN_TYPES.STATUS
+                    ? statusFilters.length > 0
+                    : column.key === TABLE_COLUMN_TYPES.STRING
+                    ? roleFilters.length > 0
+                    : false
+                "
+              >
+                filter_alt
+              </span>
+            </div>
           </div>
         </th>
 
@@ -53,7 +79,10 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let row of filteredData; trackBy: trackByRowId" [class.selected]="isSelected(row)">
+      <tr
+        *ngFor="let row of filteredData; trackBy: trackByRowId"
+        [class.selected]="isSelected(row)"
+      >
         <td *ngIf="selectable" class="select-column">
           <div class="checkbox-container">
             <input
@@ -66,7 +95,10 @@
           </div>
         </td>
 
-        <td *ngFor="let column of columns; trackBy: trackByColumnKey" [ngClass]="column.type">
+        <td
+          *ngFor="let column of columns; trackBy: trackByColumnKey"
+          [ngClass]="column.type"
+        >
           <ng-container *ngIf="column.type === TABLE_COLUMN_TYPES.STRING">
             <div class="string-cell">
               {{ getCellValue(row, column) }}

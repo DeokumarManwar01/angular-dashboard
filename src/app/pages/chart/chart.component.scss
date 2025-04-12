@@ -86,10 +86,28 @@
 
   .name-container {
     display: flex;
-    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px;
-    padding-inline: 16px;
+    padding: 20px;
+
+    .filter-buttons {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .title-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      h3 {
+        margin: 0;
+      }
+    }
+
     .count-badge {
       display: inline-block;
       padding: 4px 10px;

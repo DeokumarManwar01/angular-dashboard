@@ -31,3 +31,13 @@ export interface ITableOperation {
   row: Set<string>;
   allSelected?: boolean;
 }
+
+export const SORT_DIRECTION = {
+  ASC: 'asc',
+  DESC: 'desc',
+} as const;
+
+export type ISortDirection =
+  (typeof SORT_DIRECTION)[keyof typeof SORT_DIRECTION];
+
+export const SORTABLE_COLUMNS = ['name', 'status', 'role'];

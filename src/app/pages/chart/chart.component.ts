@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { MembersState } from '../../stores/members.state';
 import { IMembers, TYPE_MAP } from '../../models/members.model';
@@ -15,17 +15,20 @@ import { profileImages } from '../../images/images.model';
   standalone: false,
   selector: 'app-chart',
   templateUrl: './chart.component.html',
-  styleUrl: './chart.component.scss',
+  styleUrls: ['./chart.component.scss'],
 })
 export class ChartComponent implements OnInit {
-  name = 'Deokumar';
+  name = 'Dashboard';
   headers: ITableColumn[] = [];
   members: IMembers[] = [];
   showSearch = false;
   searchText = '';
+  isSorting = false;
+  isFiltering = false;
+  @ViewChild('dataTable') dataTable: any;
 
   currentPage = 1;
-  totalPages = 10;
+  totalPages = 7;
   itemsPerPage = 10;
 
   constructor(private _store: Store) {}
@@ -80,7 +83,28 @@ export class ChartComponent implements OnInit {
     }
   }
 
-  clearSearch() {
+  clearSearch(): void {
     this.searchText = '';
+  }
+
+  onSortChange(isSorting: boolean): void {
+    this.isSorting = isSorting;
+  }
+
+  clearSorting(): void {
+    if (this.dataTable) {
+      this.dataTable.clearSort();
+    }
+  }
+
+  onFilterChange(): void {
+    this.isFiltering = this.dataTable?.hasActiveFilters() || false;
+  }
+
+  clearFilters(): void {
+    if (this.dataTable) {
+      this.dataTable.clearAllFilters();
+      this.isFiltering = false;
+    }
   }
 }

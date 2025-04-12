@@ -10,6 +10,7 @@ import { HttpLoaderFactory } from '../app.module';
 import { HttpClient } from '@angular/common/http';
 import { DialogContainerComponent } from './components/dialog-container/dialog-container.component';
 import { InfoModalComponent } from './components/info-modal/info-modal.component';
+import { ColumnFilterComponent } from './components/column-filter/column-filter.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { InfoModalComponent } from './components/info-modal/info-modal.component
     ConfirmationModalComponent,
     DialogContainerComponent,
     InfoModalComponent,
+    ColumnFilterComponent,
   ],
   imports: [
     CommonModule,

@@ -1,0 +1,62 @@
+<div class="column-filter-container">
+  <div class="filter-header">
+    <h2>
+      {{
+        filterTitle ||
+          ("CHART.FILTER_BY_" + filterType.toUpperCase() | translate)
+      }}
+    </h2>
+    <div class="filter-actions">
+      <button class="select-all" (click)="selectAll()">
+        {{ "CHART.SELECT_ALL" | translate }}
+      </button>
+      <button class="clear-all" (click)="clearAll()">
+        {{ "CHART.CLEAR_ALL" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="options-list">
+    <div
+      *ngFor="let option of availableOptions"
+      class="option-item"
+      [class.selected]="isSelected(option)"
+      (click)="toggleOption(option)"
+    >
+      <div class="option-checkbox">
+        <input
+          type="checkbox"
+          [id]="'option-' + option"
+          [checked]="isSelected(option)"
+          (change)="toggleOption(option)"
+        />
+        <label [for]="'option-' + option"></label>
+      </div>
+
+      <ng-container [ngSwitch]="filterType">
+        <span
+          *ngSwitchCase="'status'"
+          class="status-badge"
+          [class]="option.toLowerCase()"
+          >{{ option }}</span
+        >
+
+        <span *ngSwitchDefault class="option-label">{{ option }}</span>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="filter-buttons">
+    <app-stroked-button
+      (buttonClick)="cancel()"
+      icon="close"
+      label="{{ 'CHART.CANCEL' | translate }}"
+      color="danger"
+    ></app-stroked-button>
+    <app-stroked-button
+      (buttonClick)="applyFilter()"
+      icon="check"
+      label="{{ 'CHART.APPLY' | translate }}"
+    ></app-stroked-button>
+  </div>
+</div>

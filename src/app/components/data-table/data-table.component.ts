@@ -1,10 +1,20 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import {
   TABLE_COLUMN_TYPES,
   TABLE_OPERATION_TYPES,
   ITableColumn,
   ITableOperation,
   ITableOperationType,
+  ISortDirection,
+  SORT_DIRECTION,
+  SORTABLE_COLUMNS,
 } from '../../models/table.model';
 import {
   COLOR_MAP,
@@ -15,6 +25,7 @@ import {
 import { DialogService } from '../../shared/services/dialog.service';
 import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
 import { InfoModalComponent } from '../../shared/components/info-modal/info-modal.component';
+import { ColumnFilterComponent } from '../../shared/components/column-filter/column-filter.component';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -31,6 +42,8 @@ export class DataTableComponent implements OnChanges {
   @Input() searchText: string = '';
 
   @Output() tableOperation = new EventEmitter<ITableOperation>();
+  @Output() sortChange = new EventEmitter<boolean>();
+  @Output() filterChange = new EventEmitter<void>();
 
   selectedRows: Set<string> = new Set();
   allSelected: boolean = false;
@@ -38,10 +51,14 @@ export class DataTableComponent implements OnChanges {
   TABLE_COLUMN_TYPES = TABLE_COLUMN_TYPES;
   filteredData: IMembers[] = [];
 
-  // Sort properties
   sortColumn: string | null = null;
-  sortDirection: 'asc' | 'desc' = 'asc';
-  sortableColumns: string[] = ['name', 'status', 'role'];
+  sortDirection: ISortDirection = SORT_DIRECTION.ASC;
+  sortableColumns: string[] = SORTABLE_COLUMNS;
+
+  statusFilters: string[] = [];
+  roleFilters: string[] = [];
+
+  private _tempSelectedOptions: string[] = [];
 
   constructor(
     private _dialog: DialogService,
@@ -55,56 +72,72 @@ export class DataTableComponent implements OnChanges {
   }
 
   filterData(): void {
-    if (!this.searchText || this.searchText.trim() === '') {
-      this.filteredData = [...this.data];
-    } else {
+    let filtered = this.data;
+
+    if (this.searchText && this.searchText.trim() !== '') {
       const searchTermLower = this.searchText.toLowerCase().trim();
-      this.filteredData = this.data.filter(row => {
-        // Search in all columns
-        return this.columns.some(column => {
+      filtered = filtered.filter((row) => {
+        return this.columns.some((column) => {
           const cellValue = this.getCellValue(row, column);
           if (cellValue === undefined || cellValue === null) {
             return false;
           }
-          
+
           const stringValue = String(cellValue).toLowerCase();
           return stringValue.includes(searchTermLower);
         });
       });
     }
 
-    // Apply sorting if a sort column is set
+    if (this.statusFilters.length > 0) {
+      filtered = filtered.filter((row) => {
+        return this.statusFilters.includes(row.status);
+      });
+    }
+
+    if (this.roleFilters.length > 0) {
+      filtered = filtered.filter((row) => {
+        return this.roleFilters.includes(row.role);
+      });
+    }
+
+    this.filteredData = filtered;
+
     if (this.sortColumn) {
       this.sortData();
     }
+    this.filterChange.emit();
   }
 
   sortData(): void {
-    const column = this.columns.find(col => 
-      this.sortColumn === col.key || 
-      (this.sortColumn === 'name' && col.type === TABLE_COLUMN_TYPES.NAME)
+    const column = this.columns.find(
+      (col) =>
+        this.sortColumn === col.key ||
+        (this.sortColumn === TABLE_COLUMN_TYPES.NAME &&
+          col.type === TABLE_COLUMN_TYPES.NAME)
     );
-    
+
     if (!column) return;
 
     this.filteredData = [...this.filteredData].sort((a, b) => {
       const valueA = this.getSortValue(a, column);
       const valueB = this.getSortValue(b, column);
-      
+
       if (valueA < valueB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
+        return this.sortDirection === SORT_DIRECTION.ASC ? -1 : 1;
       }
       if (valueA > valueB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
+        return this.sortDirection === SORT_DIRECTION.ASC ? 1 : -1;
       }
       return 0;
     });
   }
 
   getSortValue(row: IMembers, column: ITableColumn): any {
-    // Get the value for sorting (might be different from display value)
     if (column.type === TABLE_COLUMN_TYPES.NAME) {
-      return `${row.name?.firstName || ''} ${row.name?.lastName || ''}`.toLowerCase();
+      return `${row.name?.firstName || ''} ${
+        row.name?.lastName || ''
+      }`.toLowerCase();
     } else if (column.type === TABLE_COLUMN_TYPES.STATUS) {
       return row.status?.toLowerCase() || '';
     } else {
@@ -113,42 +146,61 @@ export class DataTableComponent implements OnChanges {
   }
 
   toggleSort(column: ITableColumn): void {
-    const columnKey = column.type === TABLE_COLUMN_TYPES.NAME ? 'name' : column.key;
-    
-    // Check if column is sortable
+    const columnKey =
+      column.type === TABLE_COLUMN_TYPES.NAME ? 'name' : column.key;
+
     if (!this.sortableColumns.includes(columnKey)) {
       return;
     }
-    
+
     if (this.sortColumn === columnKey) {
-      // Toggle direction if already sorting by this column
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      this.sortDirection =
+        this.sortDirection === SORT_DIRECTION.ASC
+          ? SORT_DIRECTION.DESC
+          : SORT_DIRECTION.ASC;
     } else {
-      // Set as new sort column with default ascending direction
       this.sortColumn = columnKey;
-      this.sortDirection = 'asc';
+      this.sortDirection = SORT_DIRECTION.ASC;
     }
-    
+
     this.sortData();
+    this.sortChange.emit(this.sortColumn !== null);
   }
 
   getSortIcon(column: ITableColumn): string {
-    const columnKey = column.type === TABLE_COLUMN_TYPES.NAME ? 'name' : column.key;
-    
+    const columnKey =
+      column.type === TABLE_COLUMN_TYPES.NAME
+        ? TABLE_COLUMN_TYPES.NAME
+        : column.key;
+
     if (!this.sortableColumns.includes(columnKey)) {
       return '';
     }
-    
+
     if (this.sortColumn === columnKey) {
-      return this.sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward';
+      return this.sortDirection === SORT_DIRECTION.ASC
+        ? 'arrow_upward'
+        : 'arrow_downward';
     }
-    
+
     return 'unfold_more';
   }
 
   isSortable(column: ITableColumn): boolean {
-    const columnKey = column.type === TABLE_COLUMN_TYPES.NAME ? 'name' : column.key;
+    const columnKey =
+      column.type === TABLE_COLUMN_TYPES.NAME
+        ? TABLE_COLUMN_TYPES.NAME
+        : column.key;
     return this.sortableColumns.includes(columnKey);
+  }
+
+  clearSort(): void {
+    if (this.sortColumn) {
+      this.sortColumn = null;
+      this.sortDirection = SORT_DIRECTION.ASC;
+      this.filterData();
+      this.sortChange.emit(false);
+    }
   }
 
   private handleEvent(event: Event | null): void {
@@ -295,5 +347,75 @@ export class DataTableComponent implements OnChanges {
 
   parseInt(value: string): number {
     return parseInt(value, 10);
+  }
+
+  async openStatusFilter(column: ITableColumn, event: Event): Promise<void> {
+    this.handleEvent(event);
+
+    // Use a generic string type for filterType to allow any column filter type
+    let filterType: string = TABLE_COLUMN_TYPES.STATUS;
+    let currentFilters: string[] = [];
+
+    if (column.type === TABLE_COLUMN_TYPES.STATUS) {
+      filterType = TABLE_COLUMN_TYPES.STATUS;
+      currentFilters = this.statusFilters;
+    } else if (column.type === TABLE_COLUMN_TYPES.STRING) {
+      filterType = 'role';
+      currentFilters = this.roleFilters;
+    }
+
+    const uniqueOptions = [
+      ...new Set(
+        this.data.map((item) => {
+          if (column.type === TABLE_COLUMN_TYPES.STATUS) {
+            return item.status;
+          } else if (column.type === TABLE_COLUMN_TYPES.STRING) {
+            return item.role;
+          }
+          return this.getCellValue(item, column);
+        })
+      ),
+    ] as string[];
+
+    this._tempSelectedOptions = [...currentFilters];
+
+    const dialogConfig = {
+      filterType: filterType,
+      filterTitle: this._translate.instant(
+        `CHART.FILTER_BY_${filterType.toUpperCase()}`
+      ),
+      availableOptions: uniqueOptions,
+      selectedOptions: this._tempSelectedOptions,
+      close: (result: boolean) => {
+        return result;
+      },
+    };
+
+    const confirmed = await this._dialog.open(
+      ColumnFilterComponent,
+      dialogConfig
+    );
+
+    if (confirmed) {
+      if (column.type === TABLE_COLUMN_TYPES.STATUS) {
+        this.statusFilters = [...this._tempSelectedOptions];
+      } else if (column.type === TABLE_COLUMN_TYPES.STRING) {
+        this.roleFilters = [...this._tempSelectedOptions];
+      }
+
+      this.filterData();
+      this.filterChange.emit();
+    }
+  }
+
+  hasActiveFilters(): boolean {
+    return this.statusFilters.length > 0 || this.roleFilters.length > 0;
+  }
+
+  clearAllFilters(): void {
+    this.statusFilters = [];
+    this.roleFilters = [];
+    this.filterData();
+    this.filterChange.emit();
   }
 }

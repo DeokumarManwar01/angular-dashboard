@@ -56,9 +56,25 @@
   </div>
   <div class="table-container">
     <div class="name-container">
-      <h3>{{ "CHART.TEAM_MEMBERS" | translate }}</h3>
-      <div class="count-badge">
-        {{ members.length }} {{ "CHART.USERS" | translate }}
+      <div class="title-section">
+        <h3>{{ "CHART.TEAM_MEMBERS" | translate }}</h3>
+        <div class="count-badge">
+          {{ members.length }} {{ "CHART.USERS" | translate }}
+        </div>
+      </div>
+      <div class="filter-buttons">
+        <app-stroked-button
+          *ngIf="isSorting"
+          icon="filter_alt_off"
+          label="{{ 'CHART.CLEAR_SORT' | translate }}"
+          (buttonClick)="clearSorting()"
+        ></app-stroked-button>
+        <app-stroked-button
+          *ngIf="isFiltering"
+          icon="filter_list_off"
+          label="{{ 'CHART.CLEAR_FILTERS' | translate }}"
+          (buttonClick)="clearFilters()"
+        ></app-stroked-button>
       </div>
     </div>
     <app-data-table
@@ -66,6 +82,9 @@
       [columns]="headers"
       [searchText]="searchText"
       (tableOperation)="onTableOperation($event)"
+      (sortChange)="onSortChange($event)"
+      (filterChange)="onFilterChange()"
+      #dataTable
     ></app-data-table>
     <div class="pagination">
       <app-stroked-button

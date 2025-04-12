@@ -42,6 +42,13 @@
     "DELETE_SELECTED_ROWS_CONFIRMATION": "Are you sure you want to delete these rows?",
     "ROW_INFORMATION": "Row Information",
     "NAME": "Name",
-    "HANDLE": "Handle"
+    "HANDLE": "Handle",
+    "CLEAR_SORT": "Clear sort",
+    "FILTER_BY_STATUS": "Filter by status",
+    "SELECT_ALL": "Select all",
+    "CLEAR_ALL": "Clear all",
+    "APPLY": "Apply",
+    "FILTER_BY_ROLE": "Filter by role",
+    "CLEAR_FILTERS": "Clear filters"
   }
 }
